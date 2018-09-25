@@ -11,10 +11,9 @@
 <body>
     <script>
         onload = () => {
-            let webview = document.querySelector('webview');
-            webview.addEventListener('did-stop-loading', () => {
-                webview.style.opacity = "1";
-                webview.insertCSS('::-webkit-scrollbar { width: 0px; height: 0px; background: transparent;}');
+            webview.addEventListener('did-stop-loading', (e) => {
+                e.target.style.opacity = "1";
+                e.target.insertCSS('::-webkit-scrollbar { width: 0px; height: 0px; background: transparent;}');
                 document.querySelector(".indicator").style.display = "none";
             })
         }
