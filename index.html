@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DuolinGo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <script>
+        onload = () => {
+            let webview = document.querySelector('webview');
+            webview.addEventListener('did-stop-loading', () => {
+                webview.style.opacity = "1";
+                webview.insertCSS('::-webkit-scrollbar { width: 0px; height: 0px; background: transparent;}');
+                document.querySelector(".indicator").style.display = "none";
+            })
+        }
+    </script>
+    <div class="indicator"></div>
+    <webview id="main-view" src="https://www.duolingo.com/" allowpopups style="opacity:0"></webview>
+</body>
+
+</html>
