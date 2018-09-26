@@ -1,43 +1,85 @@
 const {
     app,
-    BrowserWindow
-} = require('electron')
+    BrowserWindow,
+    Menu,
+    globalShortcut
+} = require('electron');
 
-let mainWindow
+const {Client} = require('discord-rpc');
+const rpc      = new Client({transport: 'ipc'});
 
-function createWindow() {
+clientId = '494272947788316672';
 
-    // Create the browser window.
-    mainWindow = new BrowserWindow({
-        width: 690,
-        height: 800,
-        title: "duolinGo",
-    })
+let mainWindow,
+    WindowSettings = {
+        backgroundColor: '#FFF',
+        useContentSize: false,
+       // autoHideMenuBar: false,
+        resizable: true,
+        center: true,
+        frame: true,
+        alwaysOnTop: false,
+        title: 'duolinGo',
+        icon: __dirname + '/build/logo.ico',
+        webPreferences: {
+            nodeIntegration: false,
+            plugins: true,
+        },
+    },
+    login = (tries = 0) => {
+        rpc.login({ clientId }).catch(console.error);
+    },
+    getInfos = `(function() {
+        
+        if (true) {
+            return {
+                songName: 'uyeee',
+            }
+        }
 
-    // remove meus
-    mainWindow.setMenu(null);
+    })()`;
 
-    // and load the index.html of the app.
-    mainWindow.loadFile('index.html')
+async function checkSoundCloud() {
 
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    // rpc.setActivity({
+    //     details: 'ye',
+    //     state: 'some weeb stuff'
+    // });
+    
+    if (!rpc || !mainWindow) return;
+    
 
-    // Emitted when the window is closed.
-    mainWindow.on('closed', function () {
-        mainWindow = null
-    })
+    let infos = await mainWindow.webContents.executeJavaScript(getInfos);
+    
+
+    if (infos) { // if !infos don't change presence then.
+        let {songName, author, length, timePassed} = infos;
+
+        rpc.setActivity({
+            details: songName,
+        });
+    }
 }
-app.on('ready', createWindow)
 
+app.on('ready', () => {
+    mainWindow = new BrowserWindow(WindowSettings);
+    mainWindow.maximize();
+    mainWindow.loadURL("http://www.duolingo.com/");
+    mainWindow.webContents.openDevTools();
+    
+    login();
+});
+
+rpc.on('ready', () => {
+    checkSoundCloud();
+    setInterval(() => {
+        checkSoundCloud();
+    }, 5E3);
+});
+
+// handle quit
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') {
         app.quit()
-    }
-})
-
-app.on('activate', function () {
-    if (mainWindow === null) {
-        createWindow()
     }
 })

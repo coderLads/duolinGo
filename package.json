@@ -20,6 +20,7 @@
     "electron": "2.0.8"
   },
   "dependencies": {
-    "cryptiles": "4.1.2"
+    "cryptiles": "4.1.2",
+    "discord-rpc": "^3.0.0"
   }
 }
