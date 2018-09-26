@@ -19,8 +19,8 @@ clientId = '494272947788316672';
 let mainWindow,
     WindowSettings = {
         backgroundColor: '#FFF',
-        width: 690,
-        height: 800,
+        // width: 690,
+        // height: 800,
         resizable: true,
         title: 'duolinGo',
         icon: __dirname + '/build/logo.ico',
@@ -29,6 +29,10 @@ let mainWindow,
             plugins: true,
         },
     };
+
+
+var tempCourseName = undefined;
+var startTimestamp = undefined;
 
 async function fetchActivity() {
 
@@ -60,11 +64,17 @@ async function fetchActivity() {
             link
         } = infos;
 
+        if (tempCourseName != course.toString()) {
+            tempCourseName = course.toString();
+            startTimestamp = new Date();
+        }
+
         console.log(link, language, course);
 
         rpc.setActivity({
             details: isoConv(language.toString(), {from: 1, to: 'label'}),
             state: course.toString(),
+            startTimestamp: startTimestamp,
             smallImageKey: language.toString(),
             largeImageKey: 'logo',
             largeImageText: 'Studying ' + isoConv(language.toString(), {from: 1, to: 'label'}),
@@ -77,7 +87,7 @@ app.on('ready', () => {
     mainWindow = new BrowserWindow(WindowSettings);
     mainWindow.setMenu(null);
     mainWindow.loadURL("http://www.duolingo.com/");
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
 
     // setup event handler for when the site finishes loading
