@@ -11,6 +11,9 @@ const rpc = new Client({
     transport: 'ipc'
 });
 
+
+var isoConv = require('iso-language-converter');
+
 clientId = '494272947788316672';
 
 let mainWindow,
@@ -33,9 +36,17 @@ async function fetchActivity() {
 
     let infos = await mainWindow.webContents.executeJavaScript(
         `(function() {
-            if (true) {
+
+            let [type, id] = window.location.pathname.split('/').slice(1, 3);
+
+            let language = window.location.pathname.split('/').slice(2, 4);
+            let course = window.location.pathname.split('/').slice(3, 5);
+
+            if (type == 'skill') {
                 return {
-                    activity: 'uyeee',
+                    link: window.location.pathname,
+                    language: window.location.pathname.split('/').slice(2, 3),
+                    course: window.location.pathname.split('/').slice(3, 4),
                 }
             }
         })()`
@@ -44,14 +55,19 @@ async function fetchActivity() {
 
     if (infos) { // if !infos don't change presence then.
         let {
-            activity,
-            author,
-            length,
-            timePassed
+            language,
+            course,
+            link
         } = infos;
 
+        console.log(link, language, course);
+
         rpc.setActivity({
-            details: activity,
+            details: isoConv(language.toString(), {from: 1, to: 'label'}),
+            state: course.toString(),
+            smallImageKey: language.toString(),
+            largeImageKey: 'logo',
+            largeImageText: 'Studying ' + isoConv(language.toString(), {from: 1, to: 'label'}),
         });
     }
 }
@@ -62,6 +78,7 @@ app.on('ready', () => {
     mainWindow.setMenu(null);
     mainWindow.loadURL("http://www.duolingo.com/");
     mainWindow.webContents.openDevTools();
+
 
     // setup event handler for when the site finishes loading
     mainWindow.webContents.on('did-finish-load', () => {

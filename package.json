@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "cryptiles": "4.1.2",
-    "discord-rpc": "^3.0.0"
+    "discord-rpc": "^3.0.0",
+    "iso-language-converter": "^1.1.0"
   }
 }
