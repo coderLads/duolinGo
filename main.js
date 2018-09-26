@@ -53,6 +53,12 @@ async function fetchActivity() {
                     course: window.location.pathname.split('/').slice(3, 4),
                 }
             }
+            else {
+                return {
+                    language: 'nothing',
+                }
+            }
+
         })()`
     );
 
@@ -64,10 +70,17 @@ async function fetchActivity() {
             link
         } = infos;
 
+        if (language == "nothing") {
+            rpc.clearActivity();
+            return;
+        }
+
         if (tempCourseName != course.toString()) {
             tempCourseName = course.toString();
             startTimestamp = new Date();
         }
+
+
 
         console.log(link, language, course);
 
