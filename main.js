@@ -25,11 +25,6 @@ let mainWindow,
             nodeIntegration: false,
             plugins: true,
         },
-    },
-    login = (tries = 0) => {
-        rpc.login({
-            clientId
-        }).catch(console.error);
     };
 
 async function fetchActivity() {
@@ -73,8 +68,10 @@ app.on('ready', () => {
         mainWindow.webContents.insertCSS('::-webkit-scrollbar { width: 0px; height: 0px; background: transparent;}');
     });
 
-    login();
-
+    // login to discord
+    rpc.login({
+        clientId
+    }).catch(console.error);
 
 });
 
