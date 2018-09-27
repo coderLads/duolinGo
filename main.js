@@ -16,19 +16,20 @@ const isoConv = require('iso-language-converter');
 
 let clientId = '494272947788316672';
 
-let mainWindow,
-    WindowSettings = {
-        backgroundColor: '#FFF',
-        width: 1000,
-        height: 800,
-        resizable: true,
-        title: 'duolinGo',
-        icon: __dirname + '/build/logo.ico',
-        webPreferences: {
-            nodeIntegration: false,
-            plugins: true,
-        },
-    };
+let mainWindow;
+
+let WindowSettings = {
+    backgroundColor: '#FFF',
+    width: 1000,
+    height: 800,
+    resizable: true,
+    title: 'duolinGo',
+    icon: __dirname + '/build/logo.ico',
+    webPreferences: {
+        nodeIntegration: false,
+        plugins: true,
+    }
+}
 
 
 let tempCourseName = undefined;
@@ -48,7 +49,6 @@ async function fetchActivity() {
 
             if (type == 'skill') {
                 return {
-                    link: window.location.pathname,
                     language: window.location.pathname.split('/').slice(2, 3),
                     course: window.location.pathname.split('/').slice(3, 4),
                 }
@@ -66,7 +66,6 @@ async function fetchActivity() {
         let {
             language,
             course,
-            link
         } = infos;
 
         if (language == "nothing") {
@@ -99,22 +98,28 @@ async function fetchActivity() {
 
 // app ready
 app.on('ready', () => {
+
+    // setup main window
     mainWindow = new BrowserWindow(WindowSettings);
     mainWindow.setMenu(null);
     mainWindow.loadURL("http://www.duolingo.com/");
     // mainWindow.webContents.openDevTools();
 
+    // login to discord
+    rpc.login({
+        clientId
+    }).catch(console.error);
+
+    // prevent window title update
+    mainWindow.on('page-title-updated', (evt) => {
+        evt.preventDefault();
+    });
 
     // setup event handler for when the site finishes loading
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContents.insertCSS('::-webkit-scrollbar { width: 0px; height: 0px; background: transparent;}');
         fetchActivity();
     });
-
-    // login to discord
-    rpc.login({
-        clientId
-    }).catch(console.error);
 
 });
 
