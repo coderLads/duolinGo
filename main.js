@@ -12,15 +12,15 @@ const rpc = new Client({
 });
 
 
-var isoConv = require('iso-language-converter');
+const isoConv = require('iso-language-converter');
 
-clientId = '494272947788316672';
+let clientId = '494272947788316672';
 
 let mainWindow,
     WindowSettings = {
         backgroundColor: '#FFF',
-        // width: 690,
-        // height: 800,
+        width: 1000,
+        height: 800,
         resizable: true,
         title: 'duolinGo',
         icon: __dirname + '/build/logo.ico',
@@ -31,8 +31,8 @@ let mainWindow,
     };
 
 
-var tempCourseName = undefined;
-var startTimestamp = undefined;
+let tempCourseName = undefined;
+let startTimestamp = undefined;
 
 async function fetchActivity() {
 
@@ -52,8 +52,7 @@ async function fetchActivity() {
                     language: window.location.pathname.split('/').slice(2, 3),
                     course: window.location.pathname.split('/').slice(3, 4),
                 }
-            }
-            else {
+            } else {
                 return {
                     language: 'nothing',
                 }
@@ -72,6 +71,7 @@ async function fetchActivity() {
 
         if (language == "nothing") {
             rpc.clearActivity();
+            tempCourseName = undefined;
             return;
         }
 
@@ -80,17 +80,19 @@ async function fetchActivity() {
             startTimestamp = new Date();
         }
 
-
-
-        console.log(link, language, course);
-
         rpc.setActivity({
-            details: isoConv(language.toString(), {from: 1, to: 'label'}),
+            details: isoConv(language.toString(), {
+                from: 1,
+                to: 'label'
+            }),
             state: course.toString(),
             startTimestamp: startTimestamp,
             smallImageKey: language.toString(),
             largeImageKey: 'logo',
-            largeImageText: 'Studying ' + isoConv(language.toString(), {from: 1, to: 'label'}),
+            largeImageText: 'Studying ' + isoConv(language.toString(), {
+                from: 1,
+                to: 'label'
+            }),
         });
     }
 }
@@ -100,12 +102,13 @@ app.on('ready', () => {
     mainWindow = new BrowserWindow(WindowSettings);
     mainWindow.setMenu(null);
     mainWindow.loadURL("http://www.duolingo.com/");
-    //mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
 
     // setup event handler for when the site finishes loading
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.webContents.insertCSS('::-webkit-scrollbar { width: 0px; height: 0px; background: transparent;}');
+        fetchActivity();
     });
 
     // login to discord
