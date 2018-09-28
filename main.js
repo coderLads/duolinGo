@@ -42,22 +42,23 @@ async function fetchActivity() {
     let infos = await mainWindow.webContents.executeJavaScript(
         `(function() {
 
-            let [type, id] = window.location.pathname.split('/').slice(1, 3);
+            var splitUrl = window.location.pathname.split('/').slice(1);
 
-            let language = window.location.pathname.split('/').slice(2, 4);
-            let course = window.location.pathname.split('/').slice(3, 5);
+            // TODO we can put in the check for fake languages here
 
-            if (type == 'skill') {
+            var language = splitUrl[1];
+            var course = splitUrl[2] + "/" + splitUrl[3];
+
+            if (splitUrl[0] == 'skill') {
                 return {
-                    language: window.location.pathname.split('/').slice(2, 3),
-                    course: window.location.pathname.split('/').slice(3, 4),
+                    language: language,
+                    course: course,
                 }
             } else {
                 return {
                     language: 'nothing',
                 }
             }
-
         })()`
     );
 
@@ -103,7 +104,7 @@ app.on('ready', () => {
     mainWindow = new BrowserWindow(WindowSettings);
     mainWindow.setMenu(null);
     mainWindow.loadURL("http://www.duolingo.com/");
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // login to discord
     rpc.login({
